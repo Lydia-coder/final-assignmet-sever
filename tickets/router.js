@@ -2,10 +2,11 @@ const { Router } = require("express");
 const Ticket = require("./model");
 const Event = require("../events/model");
 const Comment = require("../comments/model");
+const User = require("../user/model");
 const router = new Router();
 
 router.get("/ticket", (req, res, next) => {
-  Ticket.findAll()
+  Ticket.findAll({ include: [Comment, User] })
     .then(ticket => res.json(ticket))
     .catch(next);
 });
@@ -15,11 +16,17 @@ router.get("/event/:eventId/ticket", (req, res, next) => {
     .then(ticket => res.json(ticket))
     .catch(err => next(err));
 });
-// router.get("/ticket/:id", (req, res, next) => {
-//   Ticket.findByPk(req.params.id, { include: [Event] })
-//     .then(ticket => res.json(ticket))
-//     .catch(err => next(err));
-// });
+router.get("/ticket/:ticketId", (req, res, next) => {
+  Ticket.findOne({ where: { id: req.params.ticketId } })
+    .then(ticket => {
+      if (!ticket) {
+        res / status(404).end();
+      } else {
+        res.status(201).json(ticket);
+      }
+    })
+    .catch(next);
+});
 
 router.post("/event/:eventId/ticket", (req, res, next) => {
   Ticket.create({
@@ -30,8 +37,19 @@ router.post("/event/:eventId/ticket", (req, res, next) => {
 
     // author: req.body.author
   })
-    .then(event => res.json(event))
+    .then(event => {
+      res.json(event);
+    })
     .catch(err => next(err));
 });
 
+router.delete("/ticket/:ticketId", (req, res, next) => {
+  Ticket.destroy({
+    where: {
+      id: parseInt(req.params.ticketId)
+    }
+  })
+    .then(number => res.send({ number }))
+    .catch(next);
+});
 module.exports = router;

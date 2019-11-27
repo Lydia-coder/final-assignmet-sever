@@ -19,10 +19,11 @@ router.get("/comment", (req, res, next) => {
 //     .catch(err => next(err));
 // });
 
-router.post("ticket/:ticketId/comment", (req, res, next) => {
+router.post("/ticket/:ticketId/comment", (req, res, next) => {
   Comment.create({
     post: req.body.post,
-    text: req.body.text
+    text: req.body.text,
+    ticketId: req.params.ticketId
   })
     .then(comment => res.json(comment))
     .catch(err => next(err));

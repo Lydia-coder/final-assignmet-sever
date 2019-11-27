@@ -33,6 +33,15 @@ router.get("/events/:eventId", (req, res, next) => {
     .catch(err => next(err));
 });
 
+router.delete("/events/:eventId", (req, res, next) => {
+  Event.destroy({
+    where: {
+      id: parseInt(req.params.eventId)
+    }
+  })
+    .then(number => res.send({ number }))
+    .catch(next);
+});
 // router.post("/events/:eventsId/tickets", (req, res, next) => {
 //   const { eventId } = req.params;
 //   Ticket.create({

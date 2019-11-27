@@ -1,6 +1,7 @@
 const Sequelize = require("sequelize");
 const sequelize = require("../db");
 const Ticket = require("../tickets/model");
+const User = require("../user/model");
 
 const Comment = sequelize.define(
   "comment",
@@ -21,5 +22,7 @@ const Comment = sequelize.define(
 );
 Ticket.hasMany(Comment);
 Comment.belongsTo(Ticket);
+//Comment.belongsTo(User);
+//User.hasMany(Comment);
 
 module.exports = Comment;
