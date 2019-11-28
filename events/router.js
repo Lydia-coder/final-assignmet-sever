@@ -5,11 +5,19 @@ const User = require("../user/model");
 
 const router = new Router();
 
-// router.get("/events", (req, res, next) => {
-//   Event.findAll()
-//     .then(event => res.json(event))
-//     .catch(next);
-// });
+router.get("/event", (req, res, next) => {
+  const limit = req.query.limit || 9;
+  const offset = req.query.offset || 0;
+
+  Event.findAll({
+    limit,
+    offset
+  })
+    .then(result => {
+      res.send({ events: result.rows, total: result.count });
+    })
+    .catch(error => next(error));
+});
 
 router.post("/events", (req, res, next) => {
   Event.create({
@@ -42,6 +50,19 @@ router.delete("/events/:eventId", (req, res, next) => {
   })
     .then(number => res.send({ number }))
     .catch(next);
+});
+
+router.put("/movies/:id", (req, res, next) => {
+  Event.findByPk(req.params.id)
+    .then(event => {
+      if (!event) {
+        return res.status(404).json({
+          message: `Event does not exist`
+        });
+      }
+      return Event.update(req.body).then(even => res.json(event));
+    })
+    .catch(error => next(error));
 });
 // router.post("/events/:eventsId/tickets", (req, res, next) => {
 //   const { eventId } = req.params;
