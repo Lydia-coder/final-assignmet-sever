@@ -20,7 +20,7 @@ router.get("/event/:eventId/ticket", (req, res, next) => {
     .catch(err => next(err));
 });
 router.get("/ticket/:ticketId", (req, res, next) => {
-  Ticket.findOne({ where: { ticketId: req.params.ticketId } })
+  Ticket.findOne({ where: { id: req.params.ticketId } })
     .then(ticket => {
       if (!ticket) {
         res / status(404).end();
@@ -31,7 +31,7 @@ router.get("/ticket/:ticketId", (req, res, next) => {
     .catch(next);
 });
 
-router.post("/event/:eventId/ticket", (req, res, next) => {
+router.post("/event/:eventId/ticket", auth, (req, res, next) => {
   Ticket.create({
     price: req.body.price,
     description: req.body.description,
