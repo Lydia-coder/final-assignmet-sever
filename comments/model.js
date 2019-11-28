@@ -6,10 +6,6 @@ const User = require("../user/model");
 const Comment = sequelize.define(
   "comment",
   {
-    post: {
-      type: Sequelize.STRING,
-      allowNull: false
-    },
     text: {
       type: Sequelize.STRING,
       allowNull: false

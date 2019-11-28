@@ -4,10 +4,6 @@ const User = require("../user/model");
 const Ticket = sequelize.define(
   "ticket",
   {
-    picture: {
-      type: Sequelize.STRING,
-      allowNull: false
-    },
     price: {
       type: Sequelize.INTEGER,
       allowNull: false
@@ -18,7 +14,7 @@ const Ticket = sequelize.define(
     }
   },
   {
-    timestamp: false,
+    timestamp: true,
     tableName: "ticket"
   }
 );

@@ -1,6 +1,7 @@
 const { Router } = require("express");
 const User = require("./model");
 const Event = require("../events/model");
+const Ticket = require("../tickets/model");
 const bcrypt = require("bcrypt");
 const router = new Router();
 
@@ -14,15 +15,17 @@ router.post("/user", (req, res, next) => {
     .catch(err => next(err));
 });
 
-router.post("/event/:eventId/User", (req, res, next) => {
-  User.create({
-    username: req.body.username,
-    password: bcrypt.hashSync(password, 10),
-    eventId: req.params.eventId
+router.get("/user", (req, res, next) => {
+  User.findAll({ include: [Ticket] })
+    .then(user => res.json(user))
+    .catch(next);
+});
 
-    // author: req.body.author
+router.get("/user/:userId/ticket", (req, res, next) => {
+  Ticket.findAll({
+    where: { userId: req.params.userId }
   })
-    .then(event => res.json(event))
+    .then(ticket => res.json(ticket))
     .catch(err => next(err));
 });
 

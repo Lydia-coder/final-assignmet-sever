@@ -1,0 +1,16 @@
+const authTicket = tickets.filter(ticket => {
+  if (ticket.userId === ticket.id) {
+    return ticket;
+  }
+});
+
+const eventTicket = tickets.map(ticket => {
+  if (ticket.eventId === event.id) {
+    return ticket;
+  }
+});
+
+const result = averagePrice.reduce(a, b => {
+  a + b;
+  return result / price.length;
+});
