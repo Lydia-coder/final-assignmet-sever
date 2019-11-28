@@ -3,7 +3,7 @@
 const onlyTicket =(authTicket) =>{
 let ticket=o
 if(authTicket.length === 1){
-  return ticket + 10
+  return ticket = ticket + 10
 }else{
 return ticket
 } 
@@ -16,7 +16,6 @@ return ticket
 // const lowerPrice = (price,averageTP) =>{
 // let ticket = 0
 // if(price < averagePrice){
-// return ticket 
 // }
 //  }
 

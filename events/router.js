@@ -4,7 +4,6 @@ const Ticket = require("../tickets/model");
 const User = require("../user/model");
 
 const router = new Router();
-//add auth middele ware
 
 // router.get("/events", (req, res, next) => {
 //   Event.findAll()
@@ -18,8 +17,7 @@ router.post("/events", (req, res, next) => {
     name: req.body.name,
     description: req.body.description,
     startDate: req.body.startDate,
-    endDate: req.body.endDate,
-    userId: req.params.userId
+    endDate: req.body.endDate
   })
     .then(event => res.json(event))
     .catch(err => next(err));
