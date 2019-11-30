@@ -18,7 +18,8 @@ const Comment = sequelize.define(
 );
 Ticket.hasMany(Comment);
 Comment.belongsTo(Ticket);
-//Comment.belongsTo(User);
-//User.hasMany(Comment);
+
+User.hasMany(Comment);
+Comment.belongsTo(User);
 
 module.exports = Comment;

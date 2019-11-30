@@ -11,6 +11,10 @@ const Ticket = sequelize.define(
     description: {
       type: Sequelize.TEXT,
       allowNull: false
+    },
+    ticketRisk: {
+      type: Sequelize.STRING,
+      allowNull: false
     }
   },
   {

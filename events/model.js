@@ -1,8 +1,8 @@
 const Sequelize = require("sequelize");
 const sequelize = require("../db");
 const Ticket = require("../tickets/model");
-
 const User = require("../user/model");
+
 const Event = sequelize.define(
   "event",
   {

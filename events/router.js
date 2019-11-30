@@ -2,30 +2,37 @@ const { Router } = require("express");
 const Event = require("./model");
 const Ticket = require("../tickets/model");
 const User = require("../user/model");
+const auth = require("../auth/middelWare");
+const jwt = require("jsonwebtoken");
 
 const router = new Router();
 
-router.get("/event", (req, res, next) => {
-  const limit = req.query.limit || 9;
-  const offset = req.query.offset || 0;
+// router.get("/event", (req, res, next) => {
+//   const limit = req.query.limit || 9;
+//   const offset = req.query.offset || 0;
 
-  Event.findAll({
-    limit,
-    offset
-  })
-    .then(result => {
-      res.send({ events: result.rows, total: result.count });
-    })
-    .catch(error => next(error));
-});
+//   Event.findAll({
+//     limit,
+//     offset
+//   })
+//     .then(result => {
+//       res.send({ events: result.rows, total: result.count });
+//     })
+//     .catch(error => next(error));
+// });
 
-router.post("/events", (req, res, next) => {
+router.post("/events", auth, (req, res, next) => {
+  const token =
+    req.headers.authorization && req.headers.authorization.split(" ")[1];
+  const userId = jwt.decode(token).userId;
+
   Event.create({
     image: req.body.image,
     name: req.body.name,
     description: req.body.description,
     startDate: req.body.startDate,
-    endDate: req.body.endDate
+    endDate: req.body.endDate,
+    userId: userId
   })
     .then(event => res.json(event))
     .catch(err => next(err));
@@ -52,7 +59,7 @@ router.delete("/events/:eventId", (req, res, next) => {
     .catch(next);
 });
 
-router.put("/movies/:id", (req, res, next) => {
+router.put("/event/:id", (req, res, next) => {
   Event.findByPk(req.params.id)
     .then(event => {
       if (!event) {
@@ -60,7 +67,7 @@ router.put("/movies/:id", (req, res, next) => {
           message: `Event does not exist`
         });
       }
-      return Event.update(req.body).then(even => res.json(event));
+      return Event.update(req.body).then(event => res.json(event));
     })
     .catch(error => next(error));
 });
