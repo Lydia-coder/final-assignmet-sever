@@ -5,16 +5,16 @@ const Comment = require("../comments/model");
 const User = require("../user/model");
 const auth = require("../auth/middelWare");
 const jwt = require("jsonwebtoken");
-// // const {
-// //   getTickets,
-// //   getAuthor,
-// //   totalNumberOfTickets,
-// //   getSingleTicketPrice,
-// //   getEventId,
-// //   fetchAllTickets,
-// //   getAddedAt,
-// //   getCommentCounts
-// // } = require("../algorithm/logic");
+const {
+  getTickets,
+  getAuthor,
+  totalNumberOfTickets,
+  getSingleTicketPrice,
+  getEventId,
+  fetchAllTickets,
+  getAddedAt,
+  getCommentCounts
+} = require("../algorithm/logic");
 
 const router = new Router();
 
@@ -36,26 +36,15 @@ router.get("/event/:eventId/ticket", (req, res, next) => {
 
 router.get("/ticket/:ticketId", async (req, res, next) => {
   let risk = 0;
-
-  let ticketObj = await Ticket.findOne({
-    where: { id: req.params.ticketId }
-  }).catch(err => next(err));
-
-  let author = await Ticket.findAll({
-    where: { id: req.params.ticketId },
-
-    attributes: ["userId"],
-
-    raw: false
-  }).catch(err => next(err));
+  let ticketObj = await getTickets(req.params.ticketId);
+  let author = await getAuthor(req.params.ticketId);
+  console.log(ticketObj, "what is there?????");
   // SELECT * FROM ticket WHERE id = req.params.ticketId
   //I want it to be a number/string, not an array or object
   author = author[0].userId;
   author = author.toString();
   //count the number of tickets of that author
-  let numberOfTickets = await Ticket.count({
-    where: { userId: authorId }
-  }).catch(err => next(err));
+  let numberOfTickets = await totalNumberOfTickets(author);
 
   //risk according to number of tickets owned by that user
 
@@ -67,29 +56,17 @@ router.get("/ticket/:ticketId", async (req, res, next) => {
 
   //find price of the ticket
 
-  let ticketPrice = await Ticket.findOne({
-    where: { id: req.params.ticketId },
-
-    attributes: ["price"]
-  }).catch(err => next(err));
+  let ticketPrice = await getSingleTicketPrice(req.params.ticketId);
 
   ticketPrice = ticketPrice.price;
 
   //find eventId and all tickets of that event
 
-  let eventId = await Ticket.findOne({
-    where: { id: req.params.ticketId },
-
-    attributes: ["eventId"]
-  }).catch(err => next(err));
+  let eventId = await getEventId(req.params.ticketId);
 
   eventId = eventId.eventId;
 
-  let allTickets = await Ticket.findAndCountAll({
-    where: { eventId: eventId },
-
-    attributes: ["price"]
-  }).catch(err => next(err));
+  let allTickets = await fetchAllTickets(eventId);
 
   //count all tickets of that event( to calculate average price)
 
@@ -112,7 +89,7 @@ router.get("/ticket/:ticketId", async (req, res, next) => {
   let variable = ticketPrice / average;
 
   if (variable < 1) {
-    risk = risk + (100 - variance * 10);
+    risk = risk + (100 - variable * 10);
   } else if (variable > 1) {
     let difference = ticketPrice - average;
 
@@ -125,11 +102,7 @@ router.get("/ticket/:ticketId", async (req, res, next) => {
 
   //find when ticket was added
 
-  let addedAt = await Ticket.findOne({
-    where: { id: req.params.ticketId },
-
-    attributes: ["createdAt"]
-  }).catch(err => next(err));
+  let addedAt = await getAddedAt(req.params.ticketId);
 
   addedAt = addedAt.createdAt;
 
@@ -137,24 +110,23 @@ router.get("/ticket/:ticketId", async (req, res, next) => {
   //2019-12-01 14:11:50 => ['2019-12-01', '14:11:50']
   addedAt = addedAt.split(" ");
 
-  time = addedAt[4];
+  hours = addedAt[4];
 
-  hours = time.split(":");
+  hours = hours.split(":");
 
-  time = time[0];
+  hours = hours[0];
 
   //risk for the time the ticket was added
 
-  if (time < 9 && time > 16) {
+  if (hours < 9 && hours > 17) {
     risk = risk + 10;
   } else {
     risk = risk - 10;
   }
 
   //find and count comments related to ticket
-  let comments = await Comment.count({
-    where: { ticketId: req.params.ticketId }
-  }).catch(err => next(err));
+
+  let comments = await getCommentCounts(req.params.ticketId);
 
   //risk for number of comments
 
@@ -177,7 +149,7 @@ router.get("/ticket/:ticketId", async (req, res, next) => {
   risk = risk.toString();
 
   ticketObj.risk = risk;
-  console.log(risk, "why are you undifined?");
+  console.log(ticketObj, "will you calculate?");
 
   res.status(201).json(ticketObj);
 });
@@ -186,7 +158,7 @@ router.post("/event/:eventId/ticket", auth, (req, res, next) => {
   const token =
     req.headers.authorization && req.headers.authorization.split(" ")[1];
   const userId = jwt.decode(token).userId;
-
+  let risk = 0;
   Ticket.create({
     price: req.body.price,
     description: req.body.description,
@@ -197,6 +169,7 @@ router.post("/event/:eventId/ticket", auth, (req, res, next) => {
 
     .then(ticket => res.json(ticket))
     .catch(err => next(err));
+  console.log(req.body.price, "why are you undifined?");
 });
 
 router.delete("/ticket/:ticketId", (req, res, next) => {
