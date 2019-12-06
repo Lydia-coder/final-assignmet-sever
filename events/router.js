@@ -7,7 +7,7 @@ const jwt = require("jsonwebtoken");
 
 const router = new Router();
 
-// router.get("/event", (req, res, next) => {
+// router.get("/:page", (req, res, next) => {
 //   const limit = req.query.limit || 9;
 //   const offset = req.query.offset || 0;
 

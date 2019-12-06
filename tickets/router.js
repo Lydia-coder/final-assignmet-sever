@@ -182,4 +182,17 @@ router.delete("/ticket/:ticketId", (req, res, next) => {
     .catch(next);
 });
 
+router.put("/ticket/:id", auth, (req, res, next) => {
+  const token =
+  req.headers.authorization && req.headers.authorization.split(" ")[1];
+const userId = jwt.decode(token).userId;
+  if (!req.params.id > 0) {
+    res.status(404).end();
+  }
+  Ticket.findByPk(req.params.id)
+    .then(ticket => ticket.update({price: req.body.price, description: req.body.description,userId:userId}))
+    .then(ticket => res.send(ticket))
+    .catch(next);
+});
+
 module.exports = router;
