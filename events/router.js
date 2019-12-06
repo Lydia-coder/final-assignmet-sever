@@ -7,19 +7,22 @@ const jwt = require("jsonwebtoken");
 
 const router = new Router();
 
-// router.get("/:page", (req, res, next) => {
-//   const limit = req.query.limit || 9;
-//   const offset = req.query.offset || 0;
+router.get("/page", (req, res, next) => {
+  //http://localhost:4000/page?limit=9&offset=9
 
-//   Event.findAll({
-//     limit,
-//     offset
-//   })
-//     .then(result => {
-//       res.send({ events: result.rows, total: result.count });
-//     })
-//     .catch(error => next(error));
-// });
+  const limit = req.query.limit || 9;
+  const offset = req.query.offset || 0;
+
+  Event.findAll({
+    limit: limit,
+    offset: offset,
+    include: [Ticket, User]
+  })
+    .then(event => {
+      res.send(event);
+    })
+    .catch(next);
+});
 
 router.post("/events", auth, (req, res, next) => {
   const token =
