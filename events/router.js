@@ -7,22 +7,22 @@ const jwt = require("jsonwebtoken");
 
 const router = new Router();
 
-router.get("/page", (req, res, next) => {
-  //http://localhost:4000/page?limit=9&offset=9
+// router.get("/page", (req, res, next) => {
+//   //http://localhost:4000/page?limit=9&offset=9
 
-  const limit = req.query.limit || 9;
-  const offset = req.query.offset || 0;
+//   const limit = req.query.limit || 9;
+//   const offset = req.query.offset || 0;
 
-  Event.findAll({
-    limit: limit,
-    offset: offset,
-    include: [Ticket, User]
-  })
-    .then(event => {
-      res.send(event);
-    })
-    .catch(next);
-});
+//   Event.findAll({
+//     limit: limit,
+//     offset: offset,
+//     include: [Ticket, User]
+//   })
+//     .then(event => {
+//       res.send(event);
+//     })
+//     .catch(next);
+// });
 
 router.post("/events", auth, (req, res, next) => {
   const token =
@@ -41,13 +41,33 @@ router.post("/events", auth, (req, res, next) => {
     .catch(err => next(err));
 });
 router.get("/event", (req, res, next) => {
-  Event.findAll({ include: [Ticket, User] })
-    .then(event => res.json(event))
-    .catch(next);
+
+  // const limit = req.query.limit || 9;
+  // const offset = req.query.offset || 0;
+
+  //http://localhost:4000/page?limit=9&offset=9
+
+  const limit = req.query.limit || 9;
+  const offset = req.query.offset || 0;
+
+  Event.findAll({
+    limit: limit,
+    offset: offset,
+    include: [Ticket, User]
+  })
+  .then(event => {
+    res.send(event);
+  })
+  .catch(next);
+
 });
 
 router.get("/events/:eventId", (req, res, next) => {
-  Event.findByPk(req.params.eventId)
+
+  // const limit = req.query.limit || 9;
+  // const offset = req.query.offset || 0;
+
+  Event.findByPk(req.params.eventId) // limit:limit, offset:offset
     .then(event => res.json(event))
     .catch(err => next(err));
 });
